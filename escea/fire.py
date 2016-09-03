@@ -30,9 +30,14 @@ class Fire(object):
         self.sock.close()
 
     def send(self, message):
-        self.sock.sendto(message.hex(), (self.ip, Fire.UDP_PORT))
-        data, server = self.sock.recvfrom(1024)
-        return ResponseMessage(codecs.encode(data, 'hex')).Response()
+        try:
+            self.sock.sendto(message.hex(), (self.ip, Fire.UDP_PORT))
+            client.settimeout(2)
+            data, server = self.sock.recvfrom(1024)
+        except socket.timeout:
+            data = 'timeout'
+        finally:
+            return ResponseMessage(codecs.encode(data, 'hex')).Response()
 
     def state(self):
         return self.send(StateRequest(self.prefix, self.suffix)).state
