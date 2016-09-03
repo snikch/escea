@@ -52,4 +52,16 @@ Each portion of the message contains a code that has a certain meaning.
 * 3-13: Data codes. For a command message, this is all `00`, e.g. `00:00:00:00:00:00:00:00:00:00:00`. For a state response, each portion maps to a specific piece of information, e.g. `06:00:00:00:00:07:13:00:00:00:00`, where `07` is target temp and `13` is current temp (note this is hex for the decimal `19`).
 * 14: This appears to be a parity command / digest command that confirms the entire message is correct. This can be best seen with either an increment response such as an info command when the temp increases by 1, as the parity bit also increases by 1, or in a command message where the parity bit matches the command (since the rest of the message is `00`).
 * 15: Unknown, looks to somehow be related to the first command code? Mine is `46`.
->>>>>>> Initial playing around
+
+
+## Who
+Created with ♥ by [Mal Curtis](http://github.com/snikch) ([@snikchnz](http://twitter.com/snikchnz))
+
+
+## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
