@@ -4,11 +4,9 @@ import sys
 # Create a UDP socket
 LOCAL_IP = "192.168.0.107"
 FIRE_IP = '192.168.0.130'
-UDP_PORT = 3300
-
-message = '473100000000000000000000003146'.decode('hex')
 
 class Fire(object):
+    UDP_PORT = 3300
     def __init__(self, ip, prefix, suffix):
         super(Fire, self).__init__()
         self.ip = ip
@@ -17,7 +15,7 @@ class Fire(object):
 
     def start(self, ip):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind((ip, UDP_PORT))
+        self.sock.bind((ip, Fire.UDP_PORT))
 
     def stop(self):
         self.sock.close()
@@ -26,7 +24,7 @@ class Fire(object):
         return StateRequest(self.prefix, self.suffix)
 
     def send(self, message):
-        self.sock.sendto(message.hex(), (self.ip, UDP_PORT))
+        self.sock.sendto(message.hex(), (self.ip, Fire.UDP_PORT))
         data, server = self.sock.recvfrom(1024)
         return ResponseMessage(data.encode('hex')).Response()
 
