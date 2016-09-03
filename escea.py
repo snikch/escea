@@ -40,7 +40,17 @@ class Fire(object):
     def turnOff(self):
         return self.send(TurnOffRequest(self.prefix, self.suffix)).state
 
+    def flameEffectOn(self):
+        return self.send(FlameEffectOnRequest(self.prefix, self.suffix)).state
 
+    def flameEffectOff(self):
+        return self.send(FlameEffectOffRequest(self.prefix, self.suffix)).state
+
+    def fanBoostOn(self):
+        return self.send(FanBoostOnRequest(self.prefix, self.suffix)).state
+
+    def fanBoostOff(self):
+        return self.send(FanBoostOffRequest(self.prefix, self.suffix)).state
 
 class Message(object):
     def __init__(self):

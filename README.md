@@ -23,9 +23,14 @@ Use this library to access and control Escea Fires over the local network using 
 fire = Fire(FIRE_IP, '47', '46')
 fire.start(LOCAL_IP)
 
-resp = fire.send(fire.stateRequest())
-print >>sys.stderr, resp.state
+resp = fire.state()
+print >>sys.stderr, resp
 # {'current_temp': 19, 'on': False, 'target_temp': 23, 'fan_boost': True, 'flame_effect': True}
+
+fire.turnOn()
+fire.fanBoostOn()
+fire.flameEffectOn()
+
   ```
 
 # API
