@@ -1,3 +1,5 @@
+import codecs
+
 class Message(object):
     def __init__(self):
         super(Message, self).__init__()
@@ -16,7 +18,7 @@ class Message(object):
         return str
 
     def hex(self):
-        return self.__str__().decode('hex')
+        return codecs.decode(self.__str__(), 'hex')
 
 class RequestMessage(Message):
     def __init__(self, prefix, suffix):

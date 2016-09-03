@@ -1,4 +1,5 @@
 import socket
+import codecs
 
 from escea.message import (
     ResponseMessage,
@@ -31,7 +32,7 @@ class Fire(object):
     def send(self, message):
         self.sock.sendto(message.hex(), (self.ip, Fire.UDP_PORT))
         data, server = self.sock.recvfrom(1024)
-        return ResponseMessage(data.encode('hex')).Response()
+        return ResponseMessage(codecs.encode(data, 'hex')).Response()
 
     def state(self):
         return self.send(StateRequest(self.prefix, self.suffix)).state
