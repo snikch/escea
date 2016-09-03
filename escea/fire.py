@@ -30,6 +30,7 @@ class Fire(object):
         self.sock.close()
 
     def send(self, message):
+        data = ''
         try:
             self.sock.sendto(message.hex(), (self.ip, Fire.UDP_PORT))
             client.settimeout(2)
