@@ -25,11 +25,15 @@ fire.start(LOCAL_IP)
 
 resp = fire.state()
 print >>sys.stderr, resp
-# {'current_temp': 19, 'on': False, 'target_temp': 23, 'fan_boost': True, 'flame_effect': True}
+# {'current_temp': 19, 'on': False, 'target_temp': 23, 'fan_boost': False, 'flame_effect': False}
 
 fire.turnOn()
 fire.fanBoostOn()
 fire.flameEffectOn()
+
+resp = fire.state()
+print >>sys.stderr, resp
+# {'current_temp': 19, 'on': True, 'target_temp': 23, 'fan_boost': True, 'flame_effect': True}
 
   ```
 
