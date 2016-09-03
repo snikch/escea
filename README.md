@@ -11,10 +11,11 @@ Use this library to access and control Escea Fires over the local network using 
 - [ ] Increase / Decrease Target temperature*
 - [x] Turn on flame effect*
 - [x] Turn on fan boost*
-- [ ] Turn on shedules
+- [ ] Turn on schedules
 - [ ] Parity Checking
 
-* Planned features
+
+** Planned features
 
 # Example
 
