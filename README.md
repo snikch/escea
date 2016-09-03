@@ -7,10 +7,10 @@ Use this library to access and control Escea Fires over the local network using 
 - [ ] Discover broadcasting fires
 - [ ] Authenticate with pin code*
 - [x] Retrieve Fire State*
-- [ ] Turn fire on*
+- [x] Turn fire on*
 - [ ] Increase / Decrease Target temperature*
-- [ ] Turn on flame effect*
-- [ ] Turn on fan boost*
+- [x] Turn on flame effect*
+- [x] Turn on fan boost*
 - [ ] Turn on shedules
 - [ ] Parity Checking
 

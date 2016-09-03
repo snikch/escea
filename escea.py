@@ -20,17 +20,29 @@ class Fire(object):
     def stop(self):
         self.sock.close()
 
-    def stateRequest(self):
-        return StateRequest(self.prefix, self.suffix)
-
     def send(self, message):
         self.sock.sendto(message.hex(), (self.ip, Fire.UDP_PORT))
         data, server = self.sock.recvfrom(1024)
         return ResponseMessage(data.encode('hex')).Response()
 
+    def state(self):
+        return self.send(StateRequest(self.prefix, self.suffix)).state
+
+    def increaseTemp(self):
+        return self.send(IncreateTempRequest(self.prefix, self.suffix)).state
+
+    def decreaseTemp(self):
+        return self.send(DecreaseTempRequest(self.prefix, self.suffix)).state
+
+    def turnOn(self):
+        return self.send(TurnOnRequest(self.prefix, self.suffix)).state
+
+    def turnOff(self):
+        return self.send(TurnOffRequest(self.prefix, self.suffix)).state
+
+
 
 class Message(object):
-
     def __init__(self):
         super(Message, self).__init__()
         self.parts = [ '00' for y in range( 15 ) ]
@@ -41,14 +53,14 @@ class Message(object):
     def get(self, index):
         return self.parts[index]
 
-    def string(self):
+    def __str__(self):
         str = ''
         for y in self.parts:
             str += y
         return str
 
     def hex(self):
-        return self.string().decode('hex')
+        return self.__str__().decode('hex')
 
 class RequestMessage(Message):
     def __init__(self, prefix, suffix):
@@ -65,10 +77,50 @@ class StateRequest(RequestMessage):
         super(StateRequest, self).__init__(prefix, suffix)
         self.command('31')
 
+class IncreateTempRequest(RequestMessage):
+    def __init__(self, prefix, suffix):
+        super(IncreateTempRequest, self).__init__(prefix, suffix)
+        self.command('31')
+
+class DecreaseTempRequest(RequestMessage):
+    def __init__(self, prefix, suffix):
+        super(DecreaseTempRequest, self).__init__(prefix, suffix)
+        self.command('31')
+
+class TurnOnRequest(RequestMessage):
+    def __init__(self, prefix, suffix):
+        super(TurnOnRequest, self).__init__(prefix, suffix)
+        self.command('39')
+
+class TurnOffRequest(RequestMessage):
+    def __init__(self, prefix, suffix):
+        super(TurnOffRequest, self).__init__(prefix, suffix)
+        self.command('3a')
+
+class FanBoostOnRequest(RequestMessage):
+    def __init__(self, prefix, suffix):
+        super(FanBoostOnRequest, self).__init__(prefix, suffix)
+        self.command('37')
+
+class FanBoostOffRequest(RequestMessage):
+    def __init__(self, prefix, suffix):
+        super(FanBoostOffRequest, self).__init__(prefix, suffix)
+        self.command('38')
+
+class FlameEffectOnRequest(RequestMessage):
+    def __init__(self, prefix, suffix):
+        super(FlameEffectOnRequest, self).__init__(prefix, suffix)
+        self.command('56')
+
+class FlameEffectOffRequest(RequestMessage):
+    def __init__(self, prefix, suffix):
+        super(FlameEffectOffRequest, self).__init__(prefix, suffix)
+        self.command('55')
+
 class UnknownResponse(object):
     def __init__(self, message):
         super(UnknownResponse, self).__init__()
-        self.message = message
+        self.state = message
 
 class StateResponse(object):
     BOOL={'00': False, '01': True}
@@ -108,12 +160,12 @@ class ResponseMessage(Message):
 
 
 try:
-
     fire = Fire(FIRE_IP, '47', '46')
     fire.start(LOCAL_IP)
 
-    resp = fire.send(fire.stateRequest())
-    print >>sys.stderr, resp.state
+    # resp = fire.state()
+    resp = fire.turnOff()
+    print >>sys.stderr, resp
 
 finally:
     fire.stop()
