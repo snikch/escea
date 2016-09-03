@@ -33,7 +33,7 @@ class StateRequest(RequestMessage):
         super(StateRequest, self).__init__(prefix, suffix)
         self.command('31')
 
-class IncreateTempRequest(RequestMessage):
+class IncreaseTempRequest(RequestMessage):
     def __init__(self, prefix, suffix):
         super(IncreateTempRequest, self).__init__(prefix, suffix)
         self.command('31')
@@ -110,6 +110,6 @@ class ResponseMessage(Message):
     def Response(self):
         try:
             klass = self.MESSAGES[self.get(1)]
-        except KeyError, e:
+        except KeyError as e:
             return UnknownResponse(self)
         return klass(self)

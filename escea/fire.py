@@ -1,5 +1,18 @@
 import socket
 
+from escea.message import (
+    ResponseMessage,
+    StateRequest,
+    IncreaseTempRequest,
+    DecreaseTempRequest,
+    TurnOnRequest,
+    TurnOffRequest,
+    FlameEffectOnRequest,
+    FlameEffectOffRequest,
+    FanBoostOnRequest,
+    FanBoostOffRequest,
+)
+
 class Fire(object):
     UDP_PORT = 3300
     def __init__(self, ip, prefix, suffix):
@@ -24,7 +37,7 @@ class Fire(object):
         return self.send(StateRequest(self.prefix, self.suffix)).state
 
     def increaseTemp(self):
-        return self.send(IncreateTempRequest(self.prefix, self.suffix)).state
+        return self.send(IncreaseTempRequest(self.prefix, self.suffix)).state
 
     def decreaseTemp(self):
         return self.send(DecreaseTempRequest(self.prefix, self.suffix)).state
