@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 __title__ = 'escea'
-__version__ = '0.1.11'
+__version__ = '0.1.12'
 __build__ = 0x000100
 __author__ = 'Mal Curtis'
 __license__ = 'MIT'

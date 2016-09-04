@@ -34,7 +34,7 @@ class Fire(object):
         try:
             print (message.payload())
             self.sock.sendto(message.payload(), (self.ip, Fire.UDP_PORT))
-            client.settimeout(2)
+            self.sock.settimeout(2)
             data, server = self.sock.recvfrom(1024)
             data = data.decode('ascii')
         except socket.timeout:
