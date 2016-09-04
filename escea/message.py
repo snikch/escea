@@ -1,5 +1,3 @@
-import codecs
-
 class Message(object):
     def __init__(self):
         super(Message, self).__init__()
@@ -17,8 +15,8 @@ class Message(object):
             str += y
         return str
 
-    def hex(self):
-        return codecs.decode(self.__str__(), 'hex')
+    def payload(self):
+        return bytes(self.__str__(), 'UTF-8')
 
 class RequestMessage(Message):
     def __init__(self, prefix, suffix):
@@ -80,6 +78,12 @@ class UnknownResponse(object):
         super(UnknownResponse, self).__init__()
         self.state = message
 
+class ErrorResponse(object):
+    def __init__(self, message):
+        super(ErrorResponse, self).__init__()
+        self.message = message
+        self.state = 'Error'
+
 class StateResponse(object):
     BOOL={'00': False, '01': True}
 
@@ -103,13 +107,17 @@ class ResponseMessage(Message):
     MESSAGES={'80': StateResponse}
     def __init__(self, message):
         super(ResponseMessage, self).__init__()
-        parts = map(''.join, zip(*[iter(message)]*2))
-        i = 0
-        for part in parts:
-            self.set(i, part)
-            i += 1
+        self.message = message
+        if message != None:
+            parts = map(''.join, zip(*[iter(message)]*2))
+            i = 0
+            for part in parts:
+                self.set(i, part)
+                i += 1
 
     def Response(self):
+        if self.message == None:
+            return ErrorResponse(self)
         try:
             klass = self.MESSAGES[self.get(1)]
         except KeyError as e:

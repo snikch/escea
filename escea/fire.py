@@ -1,7 +1,7 @@
 import socket
-import codecs
 
 from escea.message import (
+    ErrorResponse,
     ResponseMessage,
     StateRequest,
     IncreaseTempRequest,
@@ -32,13 +32,15 @@ class Fire(object):
     def send(self, message):
         data = ''
         try:
-            self.sock.sendto(message.hex(), (self.ip, Fire.UDP_PORT))
+            print (message.payload())
+            self.sock.sendto(message.payload(), (self.ip, Fire.UDP_PORT))
             client.settimeout(2)
             data, server = self.sock.recvfrom(1024)
+            data = data.decode('ascii')
         except socket.timeout:
-            data = 'timeout'
-        finally:
-            return ResponseMessage(codecs.encode(data, 'hex')).Response()
+            return ErrorResponse('timeout')
+
+        return ResponseMessage(data).Response()
 
     def state(self):
         return self.send(StateRequest(self.prefix, self.suffix)).state
