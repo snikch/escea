@@ -1,3 +1,5 @@
+import binascii
+
 class Message(object):
     def __init__(self):
         super(Message, self).__init__()
@@ -16,7 +18,7 @@ class Message(object):
         return str
 
     def payload(self):
-        return bytes(self.__str__(), 'UTF-8')
+        return binascii.unhexlify(self.__str__())
 
 class RequestMessage(Message):
     def __init__(self, prefix, suffix):
@@ -33,15 +35,12 @@ class StateRequest(RequestMessage):
         super(StateRequest, self).__init__(prefix, suffix)
         self.command('31')
 
-class IncreaseTempRequest(RequestMessage):
-    def __init__(self, prefix, suffix):
-        super(IncreateTempRequest, self).__init__(prefix, suffix)
-        self.command('31')
-
-class DecreaseTempRequest(RequestMessage):
-    def __init__(self, prefix, suffix):
-        super(DecreaseTempRequest, self).__init__(prefix, suffix)
-        self.command('31')
+class SetTempRequest(RequestMessage):
+    def __init__(self, prefix, suffix, temp):
+        super(SetTempRequest, self).__init__(prefix, suffix)
+        self.command('57')
+        self.set(2, '01')
+        self.set(3, format(int(temp), 'x'))
 
 class TurnOnRequest(RequestMessage):
     def __init__(self, prefix, suffix):
@@ -109,7 +108,7 @@ class ResponseMessage(Message):
         super(ResponseMessage, self).__init__()
         self.message = message
         if message != None:
-            parts = map(''.join, zip(*[iter(message)]*2))
+            parts = map(''.join, zip(*[iter(message.decode())]*2))
             i = 0
             for part in parts:
                 self.set(i, part)
