@@ -2,66 +2,101 @@ import socket
 import binascii
 
 from escea.message import (
-    ErrorResponse,
-    ResponseMessage,
-    StateRequest,
-    SetTempRequest,
-    TurnOnRequest,
-    TurnOffRequest,
-    FlameEffectOnRequest,
-    FlameEffectOffRequest,
-    FanBoostOnRequest,
     FanBoostOffRequest,
+    FanBoostOnRequest,
+    FlameEffectOffRequest,
+    FlameEffectOnRequest,
+    PowerOffRequest,
+    PowerOnRequest,
+    Response,
+    SearchForFiresRequest,
+    SetTempRequest,
+    StatusRequest,
+    StatusResponse,
 )
+
+from escea.error import (ConnectionTimeout, UnexpectedResponse)
+
+
+def fires(timeout=2):
+    # Create a socket to send/recv on
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    sock.bind(('0.0.0.0', Fire.UDP_PORT))
+    fires = []
+    try:
+        message = SearchForFiresRequest()
+        sock.sendto(message.payload(), ('<broadcast>', Fire.UDP_PORT))
+        # Each recv should have the full timeout period to complete
+        sock.settimeout(timeout)
+        while True:
+            # Get some packets from the network
+            data, (address, _) = sock.recvfrom(1024)
+            response = Response(data)
+            # Confirm it's an I_AM_A_FIRE response
+            try:
+                message.assert_code(response.get(1))
+                fires.append(Fire(address))
+            except UnexpectedResponse:
+                pass
+    except socket.timeout:
+        # This will always happen, a timeout occurs when we no longer hear from any fires
+        # This is the required flow to break out of the `while True:` statement above.
+        pass
+    finally:
+        # Always close the socket
+        sock.close()
+
+    return fires
 
 
 class Fire(object):
     UDP_PORT = 3300
-    def __init__(self, ip, prefix, suffix):
+
+    def __init__(self, ip):
         super(Fire, self).__init__()
-        self.ip = ip
-        self.prefix = prefix
-        self.suffix = suffix
-
-    def start(self, ip):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(('0.0.0.0', Fire.UDP_PORT))
-
-    def stop(self):
-        self.sock.close()
+        self._ip = ip
 
     def send(self, message):
+        # Create a socket to send/recv on
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.bind(('0.0.0.0', Fire.UDP_PORT))
         data = ''
         try:
-            self.sock.sendto(message.payload(), (self.ip, Fire.UDP_PORT))
-            self.sock.settimeout(2)
-            data, server = self.sock.recvfrom(1024)
-            data = binascii.hexlify(data)
+            # All socket calls within a try block
+            sock.sendto(message.payload(), (self._ip, Fire.UDP_PORT))
+            sock.settimeout(2)
+            data, _ = sock.recvfrom(1024)
         except socket.timeout:
-            return ErrorResponse('timeout')
+            raise ConnectionTimeout
+        finally:
+            # Always close the socket
+            sock.close()
 
-        return ResponseMessage(data).Response()
+        response = Response(data)
+        message.assert_code(response.get(1))
+        return response
 
-    def state(self):
-        return self.send(StateRequest(self.prefix, self.suffix)).state
+    def status(self):
+        return StatusResponse(self.send(StatusRequest()))
 
-    def setTemp(self, target):
-        return self.send(SetTempRequest(self.prefix, self.suffix, target)).state
+    def set_temp(self, target):
+        self.send(SetTempRequest(target))
 
-    def turnOn(self):
-        return self.send(TurnOnRequest(self.prefix, self.suffix)).state
+    def power_on(self):
+        self.send(PowerOnRequest())
 
-    def turnOff(self):
-        return self.send(TurnOffRequest(self.prefix, self.suffix)).state
+    def power_off(self):
+        self.send(PowerOffRequest())
 
-    def flameEffectOn(self):
-        return self.send(FlameEffectOnRequest(self.prefix, self.suffix)).state
+    def flame_effect_on(self):
+        self.send(FlameEffectOnRequest())
 
-    def flameEffectOff(self):
-        return self.send(FlameEffectOffRequest(self.prefix, self.suffix)).state
+    def flame_effect_off(self):
+        self.send(FlameEffectOffRequest())
 
-    def fanBoostOn(self):
-        return self.send(FanBoostOnRequest(self.prefix, self.suffix)).state
+    def fan_boost_on(self):
+        self.send(FanBoostOnRequest())
 
-    def fanBoostOff(self):
-        return self.send(FanBoostOffRequest(self.prefix, self.suffix)).state
+    def fan_boost_off(self):
+        self.send(FanBoostOffRequest())

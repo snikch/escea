@@ -87,3 +87,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+dev_env
+test.py
+.vscode
