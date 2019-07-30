@@ -1,4 +1,4 @@
-# Escea Fireplace Python Client
+# Escea Fireplace Python Client [![PyPI version](https://badge.fury.io/py/escea.svg)](https://badge.fury.io/py/escea)
 
 Use this library to access and control Escea Fires over the local network using the proprietary Escea UDP message
 protocol.
