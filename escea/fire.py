@@ -18,7 +18,7 @@ from escea.message import (
 from escea.error import (ConnectionTimeout, UnexpectedResponse)
 
 
-def fires(timeout=2):
+def fires(timeout=1):
     # Create a socket to send/recv on
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)

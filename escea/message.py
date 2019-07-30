@@ -1,6 +1,6 @@
 import binascii
 
-from escea.error import (InvalidTemp, UnexpectedResponse)
+from escea.error import (CRCInvalid, InvalidTemp, UnexpectedResponse)
 
 START_BYTE = 0x47
 END_BYTE = 0x46
@@ -43,7 +43,11 @@ class Message(object):
         return self._parts.hex()
 
     def payload(self):
+        self._parts[13] = self.crc()
         return self._parts
+
+    def crc(self):
+        return sum(self._parts[1:12]) % 256
 
     def assert_code(self, code):
         if code != self._expected_code:
@@ -60,7 +64,6 @@ class RequestMessage(Message):
 
     def command(self, value):
         self._parts[1] = value
-        self._parts[13] = value
 
     def expect_code(self, value):
         self._expected_code = value
@@ -155,9 +158,7 @@ class StatusResponse(Message):
 class Response(Message):
     def __init__(self, data):
         super(Response, self).__init__()
-        if data != None:
-            _parts = data
-            i = 0
-            for part in _parts:
-                self.set(i, part)
-                i += 1
+        self._parts = data
+        if self.crc() != self._parts[13]:
+            raise CRCInvalid("Invalid CRC {} for data {}".format(
+                self.crc(), self._parts))
