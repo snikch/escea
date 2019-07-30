@@ -1,4 +1,5 @@
 import binascii
+import struct
 
 from escea.error import (CRCInvalid, InvalidTemp, UnexpectedResponse)
 
@@ -162,3 +163,11 @@ class Response(Message):
         if self.crc() != self._parts[13]:
             raise CRCInvalid("Invalid CRC {} for data {}".format(
                 self.crc(), self._parts))
+
+    def serial(self):
+        # unsigned long
+        return struct.unpack('>L', self._parts[3:7])[0]
+
+    def pin(self):
+        # unsigned short
+        return struct.unpack('>H', self._parts[7:9])[0]

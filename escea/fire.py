@@ -36,7 +36,7 @@ def fires(timeout=1):
             # Confirm it's an I_AM_A_FIRE response
             try:
                 message.assert_code(response.get(1))
-                fires.append(Fire(address))
+                fires.append(Fire(address, response.serial(), response.pin()))
             except UnexpectedResponse:
                 pass
     except socket.timeout:
@@ -53,9 +53,11 @@ def fires(timeout=1):
 class Fire(object):
     UDP_PORT = 3300
 
-    def __init__(self, ip):
+    def __init__(self, ip, serial='', pin=''):
         super(Fire, self).__init__()
         self._ip = ip
+        self._serial = serial
+        self._pin = pin
 
     def send(self, message):
         # Create a socket to send/recv on
@@ -100,3 +102,9 @@ class Fire(object):
 
     def fan_boost_off(self):
         self.send(FanBoostOffRequest())
+
+    def pin(self):
+        return self._pin
+
+    def serial(self):
+        return self._serial

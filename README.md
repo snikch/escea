@@ -8,6 +8,10 @@ protocol.
 fires = escea.fires()
 
 for fire in fires:
+    print(fire.serial())
+    # 66012
+    print(fire.pin())
+    # 6011
     print(fire.status())
     # {'current_temp': 19, 'on': False, 'target_temp': 23, 'fan_boost': False, 'flame_effect': False}
     fire.power_on()
@@ -31,7 +35,7 @@ fire = escea.Fire('192.168.1.22')
 ## API Protocol
 
 The UDP protocol is described in the
-[Escea Fireplace LAN Communications Protocol Specification Document](https://github.com/snikch/escea/files/644165/630260_3.Escea.Fireplace.LAN.Comms.Spec.pdf)
+[Escea Fireplace LAN Communications Protocol Specification Document](https://github.com/snikch/escea/files/644165/630260_3.Escea.Fireplace.LAN.Comms.Spec.pdf).
 
 ## Who
 
