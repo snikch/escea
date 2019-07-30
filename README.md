@@ -4,6 +4,8 @@ Use this library to access and control Escea Fires over the local network using 
 protocol.
 
 ```py
+import escea
+
 # An example of all current methods and functionality
 fires = escea.fires()
 
